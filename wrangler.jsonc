@@ -1,0 +1,12 @@
+{
+  // Tell Cloudflare this is a pure static-assets Worker — no OpenNext,
+  // no server runtime. It just uploads the `out/` directory produced
+  // by `next build` (with output: "export" in next.config.js).
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "uusmaa-brokers-tv",
+  "compatibility_date": "2026-04-17",
+  "assets": {
+    "directory": "./out",
+    "not_found_handling": "404-page"
+  }
+}
