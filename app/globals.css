@@ -1,0 +1,254 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html, body {
+  background: #05060A;
+  color: #F4F5F9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', 'Helvetica Neue', Arial, sans-serif;
+  font-feature-settings: "ss01", "cv11", "tnum";
+  letter-spacing: -0.015em;
+}
+
+/* Aurora background */
+.aurora {
+  position: fixed;
+  inset: -20%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(120px);
+  opacity: 0.55;
+}
+.aurora::before,
+.aurora::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+}
+.aurora::before {
+  width: 55%;
+  height: 55%;
+  top: -10%;
+  left: -10%;
+  background: radial-gradient(circle at 30% 30%, #E7C36A 0%, transparent 60%);
+  animation: drift1 30s ease-in-out infinite alternate;
+}
+.aurora::after {
+  width: 60%;
+  height: 60%;
+  bottom: -15%;
+  right: -15%;
+  background: radial-gradient(circle at 70% 70%, #7C6CFF 0%, transparent 55%),
+              radial-gradient(circle at 30% 70%, #FF6E6C 0%, transparent 55%);
+  animation: drift2 40s ease-in-out infinite alternate;
+}
+@keyframes drift1 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(20%, 15%) scale(1.15); }
+}
+@keyframes drift2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-15%, -10%) scale(1.2); }
+}
+
+.noise {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)' opacity='0.7'/></svg>");
+}
+
+.glass {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  backdrop-filter: blur(30px) saturate(1.4);
+  -webkit-backdrop-filter: blur(30px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-strong {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  backdrop-filter: blur(40px) saturate(1.6);
+  -webkit-backdrop-filter: blur(40px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.gold-border {
+  position: relative;
+}
+.gold-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #F5C842 0%, #E7C36A 30%, #8D6A1F 70%, #F5C842 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+.silver-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #E9EEF6 0%, #A8B3C2 50%, #4F5869 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+.bronze-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #E9A66E 0%, #A0632A 50%, #4F2E15 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask-composite: exclude;
+  pointer-events: none;
+}
+
+.rank-digit {
+  font-family: 'SF Pro Display', sans-serif;
+  font-weight: 200;
+  letter-spacing: -0.06em;
+  background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.15) 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.rank-digit-gold {
+  background: linear-gradient(180deg, #FFE69A 0%, #E7C36A 45%, #8D6A1F 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 24px rgba(231, 195, 106, 0.35));
+}
+.rank-digit-silver {
+  background: linear-gradient(180deg, #FFFFFF 0%, #C0CBD9 50%, #6B7688 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 24px rgba(200, 210, 225, 0.25));
+}
+.rank-digit-bronze {
+  background: linear-gradient(180deg, #F7BF8A 0%, #A0632A 50%, #5F3817 100%);
+  -webkit-background-clip: text;
+          background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 24px rgba(200, 120, 60, 0.3));
+}
+
+.shine {
+  position: relative;
+  overflow: hidden;
+}
+.shine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.2) 45%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.2) 55%,
+    transparent 70%
+  );
+  transform: translateX(-100%);
+  animation: shine 6s ease-in-out infinite;
+}
+@keyframes shine {
+  0%, 60% { transform: translateX(-100%); }
+  80%, 100% { transform: translateX(100%); }
+}
+
+@keyframes rise {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.rise { animation: rise 800ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+
+@keyframes pop {
+  0%   { transform: scale(0.7); opacity: 0; }
+  60%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.pop { animation: pop 700ms cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(231, 195, 106, 0.0), 0 30px 80px -20px rgba(231, 195, 106, 0.35); }
+  50%      { box-shadow: 0 0 0 8px rgba(231, 195, 106, 0.06), 0 40px 100px -20px rgba(231, 195, 106, 0.55); }
+}
+.pulse-gold { animation: pulseGlow 4s ease-in-out infinite; }
+
+@keyframes sweepUp {
+  0%   { transform: translateY(110%); }
+  100% { transform: translateY(-110%); }
+}
+.sweep-up::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+  animation: sweepUp 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.ticker { animation: ticker 80s linear infinite; }
+
+/* Display mode: hide any scroll */
+html, body { overflow: hidden; }
+html.admin, html.admin body { overflow: auto; }
+
+/* ================================================================
+   16:9 persistent stage
+   The stage keeps a 16:9 aspect ratio, fits the viewport
+   (letterboxed on non-16:9 screens), and exposes container-query
+   units (cqw / cqh) so all child sizing scales uniformly
+   regardless of the physical viewport size.
+   ================================================================ */
+.stage-outer {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.stage {
+  position: relative;
+  width: min(100vw, 100vh * 16 / 9);
+  height: min(100vh, 100vw * 9 / 16);
+  aspect-ratio: 16 / 9;
+  container-type: size;
+  container-name: stage;
+  overflow: hidden;
+}

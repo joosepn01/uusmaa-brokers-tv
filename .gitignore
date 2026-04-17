@@ -1,0 +1,29 @@
+# Next.js
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# Data — keep the file in the repo for initial seed,
+# but ignore local edits so broker rankings aren't
+# accidentally overwritten by a git pull on the server.
+# Remove this line if you want rankings tracked in git.
+# data/brokers.json
+
+# Env
+.env
+.env.local
+.env*.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/

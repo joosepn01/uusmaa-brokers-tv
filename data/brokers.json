@@ -1,0 +1,128 @@
+{
+  "brokers": [
+    {
+      "id": "indrek-peedo",
+      "name": "Indrek Peedo",
+      "title": "Partner · Board Member · Broker",
+      "phone": "+372 5020 705",
+      "email": "indrek.peedo@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1716792329-orig.jpg"
+    },
+    {
+      "id": "tanel-samuel",
+      "name": "Tanel Samuel",
+      "title": "Professional Senior Broker, Level 6",
+      "phone": "+372 5686 6700",
+      "email": "tanel.samuel@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1716797279-orig.jpg"
+    },
+    {
+      "id": "diana-allik",
+      "name": "Diana Allik",
+      "title": "Broker",
+      "phone": "+372 5692 9666",
+      "email": "diana.allik@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1717132384-orig.jpg"
+    },
+    {
+      "id": "leho-jalg",
+      "name": "Leho Jalg",
+      "title": "Broker",
+      "phone": "+372 5200 241",
+      "email": "leho.jalg@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1717132409-orig.jpg"
+    },
+    {
+      "id": "jevgeni-vinogradin",
+      "name": "Jevgeni Vinogradin",
+      "title": "Broker",
+      "phone": "+372 5880 5103",
+      "email": "jevgeni.vinogradin@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/14-1758893572-orig.jpg"
+    },
+    {
+      "id": "jane-anilane",
+      "name": "Jane Änilane",
+      "title": "Broker",
+      "phone": "+372 5450 7600",
+      "email": "jane.anilane@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1716793117-orig.jpg"
+    },
+    {
+      "id": "anni-trump",
+      "name": "Anni Trump",
+      "title": "Broker",
+      "phone": "+372 5698 6555",
+      "email": "anni.trump@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1716791946-orig.jpg"
+    },
+    {
+      "id": "otto-peedo",
+      "name": "Otto Peedo",
+      "title": "Broker",
+      "phone": "+372 5685 5595",
+      "email": "otto.peedo@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1753685185-orig.jpg"
+    },
+    {
+      "id": "michael-suits",
+      "name": "Michael Suits",
+      "title": "Broker",
+      "phone": "+372 5674 4200",
+      "email": "michael.suits@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/46-1763116080-orig.jpg"
+    },
+    {
+      "id": "susanna-baumann",
+      "name": "Susanna Baumann",
+      "title": "Broker",
+      "phone": "+372 5617 7600",
+      "email": "susanna.baumann@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1756107084-orig.jpg"
+    },
+    {
+      "id": "karin-vaino",
+      "name": "Karin Vaino",
+      "title": "Broker",
+      "phone": "+372 5625 7848",
+      "email": "karin.vaino@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/9-1766426159-orig.jpg"
+    },
+    {
+      "id": "janar-nurmoja",
+      "name": "Janar Nurmoja",
+      "title": "Broker",
+      "phone": "+372 5553 0645",
+      "email": "janar.nurmoja@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/53-1771241970-orig.jpg"
+    },
+    {
+      "id": "maris-schuppert",
+      "name": "Maris Schuppert",
+      "title": "Broker",
+      "phone": "+372 5682 6074",
+      "email": "maris.schuppert@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/43-1774438226-orig.jpg"
+    }
+  ],
+  "monthlyTop": [
+    "anni-trump",
+    "jane-anilane",
+    "jevgeni-vinogradin"
+  ],
+  "yearlyTop": [
+    "indrek-peedo",
+    "tanel-samuel",
+    "diana-allik",
+    "leho-jalg",
+    "jevgeni-vinogradin",
+    "jane-anilane",
+    "anni-trump",
+    "otto-peedo",
+    "michael-suits",
+    "susanna-baumann",
+    "karin-vaino",
+    "janar-nurmoja",
+    "maris-schuppert"
+  ]
+}
