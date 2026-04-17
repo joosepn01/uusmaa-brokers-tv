@@ -20,12 +20,25 @@ export type Data = {
 const FILE = path.join(process.cwd(), "data", "brokers.json");
 
 export async function readData(): Promise<Data> {
-  const raw = await fs.readFile(FILE, "utf8");
-  return JSON.parse(raw) as Data;
+  try {
+    const raw = await fs.readFile(FILE, "utf8");
+    return JSON.parse(raw) as Data;
+  } catch {
+    // File missing (first deploy, Vercel cold-start, etc.) —
+    // return a safe empty shell so the page never crashes.
+    return { brokers: [], monthlyTop: [], yearlyTop: [] };
+  }
 }
 
 export async function writeData(data: Data): Promise<void> {
-  await fs.writeFile(FILE, JSON.stringify(data, null, 2) + "\n", "utf8");
+  try {
+    await fs.writeFile(FILE, JSON.stringify(data, null, 2) + "\n", "utf8");
+  } catch {
+    // Vercel / read-only filesystems — writes are a no-op.
+    // On a real VPS the write always succeeds.
+    // eslint-disable-next-line no-console
+    console.warn("[brokers-tv] writeData: filesystem is read-only, skipping write.");
+  }
 }
 
 const DAY_MS = 24 * 60 * 60 * 1000;
