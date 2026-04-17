@@ -1,11 +1,8 @@
-import { readData, ensureDailySync, type Broker } from "@/lib/store";
+import { readData, type Broker } from "@/lib/store";
 import LiveClock from "./components/LiveClock";
 import Weather from "./components/Weather";
 import PodiumCard from "./components/PodiumCard";
 import YearlyList from "./components/YearlyList";
-
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
 
 function previousMonthEt(now = new Date()): string {
   const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -17,9 +14,6 @@ function currentYearEt(now = new Date()): string {
 
 export default async function Page() {
   const data = await readData();
-  // Kicks off a scrape of uusmaanord.ee/maaklerid once per 24h if stale.
-  // Non-blocking: the new entries show up on the next page load.
-  ensureDailySync(data);
   const byId = new Map(data.brokers.map((b) => [b.id, b] as const));
   const monthly: Broker[] = data.monthlyTop
     .map((id) => byId.get(id))

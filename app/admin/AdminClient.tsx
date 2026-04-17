@@ -138,17 +138,30 @@ export default function AdminClient({ initial }: { initial: Data }) {
   }
 
   async function save() {
+    // Static-export friendly: download a brokers.json the user can commit
+    // to the repo. Cloudflare Pages rebuilds automatically on push.
     setSaving(true);
     setSaved("idle");
     try {
-      const r = await fetch("/api/rankings", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ monthlyTop: monthly, yearlyTop: yearly }),
+      const next: Data = {
+        ...initial,
+        brokers,
+        monthlyTop: monthly,
+        yearlyTop: yearly,
+      };
+      const blob = new Blob([JSON.stringify(next, null, 2) + "\n"], {
+        type: "application/json",
       });
-      if (!r.ok) throw new Error();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "brokers.json";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
       setSaved("ok");
-      setTimeout(() => setSaved("idle"), 2200);
+      setTimeout(() => setSaved("idle"), 2500);
     } catch {
       setSaved("err");
     } finally {
@@ -187,8 +200,10 @@ export default function AdminClient({ initial }: { initial: Data }) {
               Maaklerite edetabel
             </h1>
             <p className="mt-2 text-[14px] text-white/55">
-              Lohista muutmaks järjekorda. Kuu poodiumil on täpselt 3 kohta. Muudatused jõustuvad
-              ekraanil pärast salvestamist.
+              Lohista muutmaks järjekorda. Kuu poodiumil on täpselt 3 kohta. Salvestamine laeb alla
+              uue <code className="font-mono text-accent-gold">brokers.json</code> faili — aseta see
+              repo <code className="font-mono text-accent-gold">data/</code> kausta ja pushi
+              GitHubi, Cloudflare Pages uuendab ekraani automaatselt.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -204,7 +219,7 @@ export default function AdminClient({ initial }: { initial: Data }) {
               disabled={saving}
               className="rounded-full bg-white px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.3em] text-black disabled:opacity-60"
             >
-              {saving ? "Salvestan…" : saved === "ok" ? "Salvestatud ✓" : saved === "err" ? "Viga" : "Salvesta"}
+              {saving ? "Laen alla…" : saved === "ok" ? "Fail alla laetud ✓" : saved === "err" ? "Viga" : "Lae alla JSON"}
             </button>
           </div>
         </header>
