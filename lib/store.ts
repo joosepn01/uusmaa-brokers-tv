@@ -1,5 +1,7 @@
 import { promises as fs } from "fs";
 import path from "path";
+// Bundled at build time — always available even on read-only filesystems.
+import seedData from "../data/brokers.json";
 
 export type Broker = {
   id: string;
@@ -24,9 +26,9 @@ export async function readData(): Promise<Data> {
     const raw = await fs.readFile(FILE, "utf8");
     return JSON.parse(raw) as Data;
   } catch {
-    // File missing (first deploy, Vercel cold-start, etc.) —
-    // return a safe empty shell so the page never crashes.
-    return { brokers: [], monthlyTop: [], yearlyTop: [] };
+    // On Vercel / read-only filesystems fall back to the seed data
+    // bundled at build time so the page never crashes.
+    return seedData as Data;
   }
 }
 

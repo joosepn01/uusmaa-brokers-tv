@@ -1,10 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // Tell Vercel's bundler to include the data file inside
-  // each serverless function so readData() can find it.
+  // Tell Next.js to bundle the data file with every server function.
   outputFileTracingIncludes: {
-    "/**": ["./data/**"],
+    "/*": ["./data/**"],
+    "/api/*": ["./data/**"],
   },
   images: {
     remotePatterns: [
