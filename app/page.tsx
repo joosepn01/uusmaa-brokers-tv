@@ -3,6 +3,7 @@ import LiveClock from "./components/LiveClock";
 import Weather from "./components/Weather";
 import PodiumCard from "./components/PodiumCard";
 import YearlyList from "./components/YearlyList";
+import ThemeToggle from "./components/ThemeToggle";
 
 function previousMonthEt(now = new Date()): string {
   const d = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -142,7 +143,10 @@ export default async function Page() {
           >
             <Weather />
 
-            <LiveClock />
+            <div className="flex items-center gap-[1.4cqw]">
+              <LiveClock />
+              <ThemeToggle />
+            </div>
           </footer>
         </div>
       </div>
