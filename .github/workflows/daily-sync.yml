@@ -1,0 +1,46 @@
+name: Daily broker sync
+
+# Runs every day at 05:00 UTC (08:00 EET / 09:00 EEST), before the office
+# opens, so the TV always has fresh data. `workflow_dispatch` also lets
+# you trigger a sync on demand from the Actions tab.
+on:
+  schedule:
+    - cron: "0 5 * * *"
+  workflow_dispatch:
+
+# The default GITHUB_TOKEN is read-only in some org setups; we explicitly
+# request write access so the job can push the updated brokers.json.
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Run sync script
+        run: node scripts/sync-brokers.mjs
+
+      - name: Commit and push if changed
+        run: |
+          if git diff --quiet -- data/brokers.json; then
+            echo "No changes — nothing to commit."
+            exit 0
+          fi
+
+          # Show the diff in the action log so it's easy to audit.
+          echo "Detected changes:"
+          git --no-pager diff -- data/brokers.json
+
+          git config user.name  "uus-maa-bot"
+          git config user.email "uus-maa-bot@users.noreply.github.com"
+          git add data/brokers.json
+          git commit -m "chore(sync): refresh brokers from uusmaanord.ee"
+          git push
