@@ -57,7 +57,15 @@ export default function PodiumCard({ broker, rank }: Props) {
         <div className="flex items-center justify-between">
           <div
             className={`rank-digit ${m.digit} font-display leading-[1.1]`}
-            style={{ fontSize: m.digitSize, paddingTop: "0.4cqh" }}
+            style={{
+              fontSize: m.digitSize,
+              paddingTop: "0.4cqh",
+              // Single digits don't need negative tracking; without this
+              // override the tight letter-spacing crops the gradient on
+              // the right edge of the glyph.
+              letterSpacing: 0,
+              paddingRight: "0.6cqw",
+            }}
           >
             {rank}
           </div>

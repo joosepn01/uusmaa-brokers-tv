@@ -41,7 +41,7 @@ export default function ThemeToggle() {
       aria-label={
         theme === "dark" ? "Lülita hele teema" : "Lülita tume teema"
       }
-      className="grid place-items-center rounded-full border border-white/15 text-white/55 transition hover:text-white hover:border-white/30"
+      className="theme-toggle grid place-items-center rounded-full border border-white/15 text-white/55 transition hover:text-white hover:border-white/30"
       style={{
         height: "3.4cqh",
         width: "3.4cqh",

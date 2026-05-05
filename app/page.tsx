@@ -43,8 +43,23 @@ export default async function Page() {
         >
           {/* Top bar: logo + yearly heading */}
           <header className="flex items-center justify-between" style={{ height: "5.6cqh" }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/um-logo.svg" alt="Uus Maa" style={{ height: "4.6cqh" }} />
+            {/* Two logos rendered, CSS hides the wrong one based on data-theme. */}
+            <div className="relative" style={{ height: "4.6cqh" }}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/um-logo.svg"
+                alt="Uus Maa"
+                className="logo-on-dark"
+                style={{ height: "4.6cqh" }}
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/um-logo-dark.svg"
+                alt="Uus Maa"
+                className="logo-on-light"
+                style={{ height: "4.6cqh" }}
+              />
+            </div>
 
             <div className="flex items-baseline gap-[1cqw] leading-none">
               <span
@@ -86,29 +101,19 @@ export default async function Page() {
                 <div className="relative mt-[0.6cqh] flex items-center gap-[1.4cqw]">
                   <span
                     aria-hidden
-                    className="block"
-                    style={{
-                      width: "9cqw",
-                      height: "1px",
-                      background:
-                        "linear-gradient(90deg, transparent, rgba(231,195,106,0.75))",
-                    }}
+                    className="heading-rule block"
+                    style={{ width: "9cqw", height: "1px" }}
                   />
                   <h2
-                    className="rank-digit rank-digit-gold font-display font-extralight tracking-[-0.03em] first-letter:uppercase"
+                    className="month-heading font-display font-extralight tracking-[-0.03em] first-letter:uppercase"
                     style={{ fontSize: "7.4cqh", lineHeight: "0.9" }}
                   >
                     {previousMonthEt()}
                   </h2>
                   <span
                     aria-hidden
-                    className="block"
-                    style={{
-                      width: "9cqw",
-                      height: "1px",
-                      background:
-                        "linear-gradient(90deg, rgba(231,195,106,0.75), transparent)",
-                    }}
+                    className="heading-rule is-right block"
+                    style={{ width: "9cqw", height: "1px" }}
                   />
                 </div>
               </div>
