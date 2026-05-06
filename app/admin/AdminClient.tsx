@@ -112,6 +112,30 @@ export default function AdminClient({ initial }: { initial: Data }) {
     return () => document.documentElement.classList.remove("admin");
   }, []);
 
+  // Hydrate the dragged ordering from the live KV-backed API on mount.
+  // The static seed is shown instantly, then replaced with the current
+  // rankings as soon as the fetch resolves.
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/rankings", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((live) => {
+        if (
+          cancelled ||
+          !live ||
+          !Array.isArray(live.monthlyTop) ||
+          !Array.isArray(live.yearlyTop)
+        )
+          return;
+        setMonthly(live.monthlyTop);
+        setYearly(live.yearlyTop);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 4 } })
   );
@@ -138,28 +162,48 @@ export default function AdminClient({ initial }: { initial: Data }) {
   }
 
   async function save() {
-    // Static-export friendly: download a brokers.json the user can commit
-    // to the repo. Cloudflare Pages rebuilds automatically on push.
+    // PUT to /api/rankings — Cloudflare Worker writes to KV, the live
+    // TV picks the change up within ~20s without a rebuild.
     setSaving(true);
     setSaved("idle");
     try {
-      const next: Data = {
-        ...initial,
-        brokers,
-        monthlyTop: monthly,
-        yearlyTop: yearly,
+      const TOKEN_KEY = "umnord-admin-token";
+      const readToken = (): string | null => {
+        try {
+          return localStorage.getItem(TOKEN_KEY);
+        } catch {
+          return null;
+        }
       };
-      const blob = new Blob([JSON.stringify(next, null, 2) + "\n"], {
-        type: "application/json",
-      });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "brokers.json";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      const writeToken = (t: string) => {
+        try {
+          localStorage.setItem(TOKEN_KEY, t);
+        } catch {}
+      };
+
+      const doPut = (token: string | null) =>
+        fetch("/api/rankings", {
+          method: "PUT",
+          headers: {
+            "content-type": "application/json",
+            ...(token ? { authorization: `Bearer ${token}` } : {}),
+          },
+          body: JSON.stringify({
+            monthlyTop: monthly,
+            yearlyTop: yearly,
+          }),
+        });
+
+      let r = await doPut(readToken());
+      if (r.status === 401) {
+        const entered = window.prompt(
+          "Sisesta admini parool (salvestatakse selles brauseris)"
+        );
+        if (!entered) throw new Error("no-token");
+        writeToken(entered);
+        r = await doPut(entered);
+      }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
       setSaved("ok");
       setTimeout(() => setSaved("idle"), 2500);
     } catch {
@@ -200,10 +244,8 @@ export default function AdminClient({ initial }: { initial: Data }) {
               Maaklerite edetabel
             </h1>
             <p className="mt-2 text-[14px] text-white/55">
-              Lohista muutmaks järjekorda. Kuu poodiumil on täpselt 3 kohta. Salvestamine laeb alla
-              uue <code className="font-mono text-accent-gold">brokers.json</code> faili — aseta see
-              repo <code className="font-mono text-accent-gold">data/</code> kausta ja pushi
-              GitHubi, Cloudflare Pages uuendab ekraani automaatselt.
+              Lohista muutmaks järjekorda. Kuu poodiumil on täpselt 3 kohta. Salvestamine
+              jõustub TV ekraanil ~20 sekundi jooksul, ilma uuesti laadimata.
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -219,7 +261,7 @@ export default function AdminClient({ initial }: { initial: Data }) {
               disabled={saving}
               className="rounded-full bg-white px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.3em] text-black disabled:opacity-60"
             >
-              {saving ? "Laen alla…" : saved === "ok" ? "Fail alla laetud ✓" : saved === "err" ? "Viga" : "Lae alla JSON"}
+              {saving ? "Salvestan…" : saved === "ok" ? "Salvestatud ✓" : saved === "err" ? "Viga" : "Salvesta"}
             </button>
           </div>
         </header>
