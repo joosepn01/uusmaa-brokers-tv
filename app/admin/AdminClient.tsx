@@ -103,7 +103,11 @@ export default function AdminClient({ initial }: { initial: Data }) {
   const [monthly, setMonthly] = useState<string[]>(initial.monthlyTop);
   const [yearly, setYearly] = useState<string[]>(initial.yearlyTop);
   const [saving, setSaving] = useState(false);
-  const [saved, setSaved] = useState<"idle" | "ok" | "err">("idle");
+  type SaveState =
+    | { kind: "idle" }
+    | { kind: "ok" }
+    | { kind: "err"; reason: "kv" | "auth" | "network" | "unknown" };
+  const [saved, setSaved] = useState<SaveState>({ kind: "idle" });
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -165,52 +169,81 @@ export default function AdminClient({ initial }: { initial: Data }) {
     // PUT to /api/rankings — Cloudflare Worker writes to KV, the live
     // TV picks the change up within ~20s without a rebuild.
     setSaving(true);
-    setSaved("idle");
+    setSaved({ kind: "idle" });
+    const TOKEN_KEY = "umnord-admin-token";
+    const readToken = (): string | null => {
+      try {
+        return localStorage.getItem(TOKEN_KEY);
+      } catch {
+        return null;
+      }
+    };
+    const writeToken = (t: string) => {
+      try {
+        localStorage.setItem(TOKEN_KEY, t);
+      } catch {}
+    };
+
+    const doPut = (token: string | null) =>
+      fetch("/api/rankings", {
+        method: "PUT",
+        headers: {
+          "content-type": "application/json",
+          ...(token ? { authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          monthlyTop: monthly,
+          yearlyTop: yearly,
+        }),
+      });
+
     try {
-      const TOKEN_KEY = "umnord-admin-token";
-      const readToken = (): string | null => {
-        try {
-          return localStorage.getItem(TOKEN_KEY);
-        } catch {
-          return null;
-        }
-      };
-      const writeToken = (t: string) => {
-        try {
-          localStorage.setItem(TOKEN_KEY, t);
-        } catch {}
-      };
-
-      const doPut = (token: string | null) =>
-        fetch("/api/rankings", {
-          method: "PUT",
-          headers: {
-            "content-type": "application/json",
-            ...(token ? { authorization: `Bearer ${token}` } : {}),
-          },
-          body: JSON.stringify({
-            monthlyTop: monthly,
-            yearlyTop: yearly,
-          }),
-        });
-
       let r = await doPut(readToken());
       if (r.status === 401) {
         const entered = window.prompt(
           "Sisesta admini parool (salvestatakse selles brauseris)"
         );
-        if (!entered) throw new Error("no-token");
+        if (!entered) {
+          setSaved({ kind: "err", reason: "auth" });
+          return;
+        }
         writeToken(entered);
         r = await doPut(entered);
+        if (r.status === 401) {
+          setSaved({ kind: "err", reason: "auth" });
+          return;
+        }
       }
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      setSaved("ok");
-      setTimeout(() => setSaved("idle"), 2500);
+      if (r.status === 503) {
+        // Worker deployed but KV binding not configured yet.
+        setSaved({ kind: "err", reason: "kv" });
+        return;
+      }
+      if (!r.ok) {
+        setSaved({ kind: "err", reason: "unknown" });
+        return;
+      }
+      setSaved({ kind: "ok" });
+      setTimeout(() => setSaved({ kind: "idle" }), 2500);
     } catch {
-      setSaved("err");
+      setSaved({ kind: "err", reason: "network" });
     } finally {
       setSaving(false);
     }
+  }
+
+  function saveButtonLabel(): string {
+    if (saving) return "Salvestan…";
+    if (saved.kind === "ok") return "Salvestatud ✓";
+    if (saved.kind === "err") {
+      switch (saved.reason) {
+        case "kv":      return "KV pole seadistatud";
+        case "auth":    return "Vale parool";
+        case "network": return "Võrguviga";
+        default:        return "Viga";
+      }
+    }
+    return "Salvesta";
   }
 
   function addToMonthly(id: string) {
@@ -261,7 +294,7 @@ export default function AdminClient({ initial }: { initial: Data }) {
               disabled={saving}
               className="rounded-full bg-white px-6 py-2.5 font-mono text-[11px] uppercase tracking-[0.3em] text-black disabled:opacity-60"
             >
-              {saving ? "Salvestan…" : saved === "ok" ? "Salvestatud ✓" : saved === "err" ? "Viga" : "Salvesta"}
+              {saveButtonLabel()}
             </button>
           </div>
         </header>

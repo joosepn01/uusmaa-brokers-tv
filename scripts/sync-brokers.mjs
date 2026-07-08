@@ -132,19 +132,25 @@ async function main() {
   const raw = await fs.readFile(DATA_FILE, "utf8");
   const data = JSON.parse(raw);
   const existing = new Map(data.brokers.map((b) => [b.id, b]));
+  const scrapedIds = new Set(scraped.map((s) => s.id));
 
   let added = 0;
   let updated = 0;
+  let removed = 0;
+  const removedIds = [];
   const updatedBrokers = [];
 
+  // Safety guard: only actively remove brokers if the scrape looks healthy.
+  // If the source page returns a suspiciously short list, keep everyone.
+  const MIN_SCRAPE_FOR_REMOVAL = 5;
+  const allowRemoval = scraped.length >= MIN_SCRAPE_FOR_REMOVAL;
+
   // Walk existing brokers in original order, refreshing fields from scrape
-  // when the broker still exists on the source page.
+  // when the broker still exists on the source page. Brokers that have
+  // been delisted on the source are dropped (subject to the safety guard).
   for (const b of data.brokers) {
     const fresh = scraped.find((s) => s.id === b.id);
     if (fresh) {
-      // Preserve the original `title` if the office wrote a custom one
-      // and the source title is generic (heuristic: keep existing title
-      // unless the existing one is empty).
       const merged = {
         ...b,
         name: fresh.name || b.name,
@@ -157,9 +163,11 @@ async function main() {
       };
       if (!brokerEqual(b, merged)) updated++;
       updatedBrokers.push(merged);
+    } else if (allowRemoval) {
+      removed++;
+      removedIds.push(b.id);
+      // dropped
     } else {
-      // Keep the broker even if not on the source page — could be
-      // temporarily delisted; admin can remove manually.
       updatedBrokers.push(b);
     }
   }
@@ -175,21 +183,26 @@ async function main() {
   }
 
   // New brokers go to the bottom of the yearly list, never the podium.
-  const yearlySet = new Set(data.yearlyTop);
-  const newYearly = [...data.yearlyTop];
+  // Removed brokers are pruned from both podium and yearly ordering.
+  const removedSet = new Set(removedIds);
+  const newYearly = data.yearlyTop.filter((id) => !removedSet.has(id));
+  const yearlySet = new Set(newYearly);
   for (const id of newIds) {
     if (!yearlySet.has(id)) newYearly.push(id);
   }
+  const newMonthly = data.monthlyTop.filter((id) => !removedSet.has(id));
 
-  // Diff brokers + yearly only — lastSyncedAt is bumped only if there's
-  // a real content change so we don't rebuild Cloudflare every day for
-  // nothing.
+  // Diff brokers + yearly + monthly — lastSyncedAt is bumped only if
+  // there's a real content change so we don't rebuild Cloudflare every
+  // day for nothing.
   const beforeContent = JSON.stringify({
     brokers: data.brokers,
+    monthlyTop: data.monthlyTop,
     yearlyTop: data.yearlyTop,
   });
   const afterContent = JSON.stringify({
     brokers: updatedBrokers,
+    monthlyTop: newMonthly,
     yearlyTop: newYearly,
   });
   const changed = beforeContent !== afterContent;
@@ -197,14 +210,19 @@ async function main() {
   const next = {
     ...data,
     brokers: updatedBrokers,
+    monthlyTop: newMonthly,
     yearlyTop: newYearly,
     ...(changed ? { lastSyncedAt: new Date().toISOString() } : {}),
   };
 
   console.log(
-    `[sync] added=${added} updated=${updated} total=${updatedBrokers.length} changed=${changed}`
+    `[sync] added=${added} updated=${updated} removed=${removed} total=${updatedBrokers.length} changed=${changed}`
   );
   if (added > 0) console.log(`[sync] new broker ids: ${newIds.join(", ")}`);
+  if (removed > 0) console.log(`[sync] removed broker ids: ${removedIds.join(", ")}`);
+  if (removed > 0 && !allowRemoval) {
+    console.log("[sync] safety guard: scrape too short to remove — kept existing brokers");
+  }
 
   if (DRY_RUN) {
     console.log("[sync] dry run — not writing");
@@ -212,14 +230,11 @@ async function main() {
   }
 
   if (!changed) {
-    // Skip writing entirely so nothing shows up in `git status` and the
-    // Action's commit step has nothing to do. lastSyncedAt is only
-    // updated when there's a real change.
     console.log("[sync] no changes — skipping write");
     return;
   }
 
-  await fs.writeFile(DATA_FILE, after + "\n", "utf8");
+  await fs.writeFile(DATA_FILE, JSON.stringify(next, null, 2) + "\n", "utf8");
   console.log(`[sync] wrote ${DATA_FILE}`);
 }
 

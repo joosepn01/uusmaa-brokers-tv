@@ -97,12 +97,28 @@
       "image": "https://uusmaanord.ee/images/brokers/53-1771241970-orig.jpg"
     },
     {
-      "id": "maris-schuppert",
-      "name": "Maris Schuppert",
-      "title": "Broker",
-      "phone": "+372 5682 6074",
-      "email": "maris.schuppert@uusmaa.ee",
-      "image": "https://uusmaanord.ee/images/brokers/43-1774438226-orig.jpg"
+      "id": "kadri-heero",
+      "name": "Kadri Heero",
+      "title": "Maakler",
+      "phone": "+372 5624 3532",
+      "email": "kadri.heero@uusmaa.ee",
+      "image": "https://uusmaanord.ee/images/brokers/43-1780914638-orig.jpg"
+    },
+    {
+      "id": "geidi-merivald",
+      "name": "Geidi Merivald",
+      "title": "Maakler",
+      "phone": "+372 5336 5705",
+      "email": "geidi.merivald@uusmaa.ee",
+      "image": "https://uusmaanord.ee/wp-content/themes/uusmaanord/images/broker-placeholder.png"
+    },
+    {
+      "id": "tuuli-lagle-riistop",
+      "name": "Tuuli Lagle Riistop",
+      "title": "Maakler",
+      "phone": "+372 5628 2894",
+      "email": "tuuli.riistop@uusmaa.ee",
+      "image": "https://uusmaanord.ee/wp-content/themes/uusmaanord/images/broker-placeholder.png"
     }
   ],
   "monthlyTop": [
@@ -123,6 +139,9 @@
     "susanna-baumann",
     "karin-vaino",
     "janar-nurmoja",
-    "maris-schuppert"
-  ]
+    "kadri-heero",
+    "geidi-merivald",
+    "tuuli-lagle-riistop"
+  ],
+  "lastSyncedAt": "2026-07-08T08:05:29.880Z"
 }

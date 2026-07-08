@@ -94,7 +94,17 @@ export default function Board({ initialData, initialLabels }: Props) {
     ...data.brokers.filter((b) => !inYearly.has(b.id)),
   ];
 
-  while (monthly.length < 3) monthly.push(data.brokers[monthly.length]);
+  // Pad the podium to 3 with brokers not already on it, so removing a
+  // broker in /admin never leaves a slot empty (which would crash
+  // PodiumCard on the `broker.name` access).
+  const shownInMonthly = new Set(monthly.map((b) => b.id));
+  for (const b of data.brokers) {
+    if (monthly.length >= 3) break;
+    if (!shownInMonthly.has(b.id)) {
+      monthly.push(b);
+      shownInMonthly.add(b.id);
+    }
+  }
   const [first, second, third] = monthly;
 
   return (
@@ -196,13 +206,13 @@ export default function Board({ initialData, initialLabels }: Props) {
                 style={{ minHeight: 0 }}
               >
                 <div className="col-span-4 h-[84%]">
-                  <PodiumCard broker={first} rank={1} />
+                  {first ? <PodiumCard broker={first} rank={1} /> : null}
                 </div>
                 <div className="col-span-4 h-[84%]">
-                  <PodiumCard broker={second} rank={2} />
+                  {second ? <PodiumCard broker={second} rank={2} /> : null}
                 </div>
                 <div className="col-span-4 h-[84%]">
-                  <PodiumCard broker={third} rank={3} />
+                  {third ? <PodiumCard broker={third} rank={3} /> : null}
                 </div>
               </div>
             </section>
