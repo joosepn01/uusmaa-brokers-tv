@@ -10,13 +10,13 @@
     "directory": "./out",
     "binding": "ASSETS",
     "not_found_handling": "404-page"
-  }
-  // Once the KV namespace exists in the Cloudflare dashboard, append:
-  //
-  //   "kv_namespaces": [
-  //     { "binding": "RANKINGS", "id": "<namespace-id-from-dashboard>" }
-  //   ]
-  //
-  // The ADMIN_TOKEN secret is set via the Cloudflare dashboard
-  // (Settings → Variables and Secrets), not here.
+  },
+  // Live rankings storage. The Worker reads/writes JSON at key
+  // `rankings:current`. Created in the Cloudflare dashboard, bound
+  // here as env.RANKINGS.
+  "kv_namespaces": [
+    { "binding": "RANKINGS", "id": "d47b75c93f48441b96a63a305abd0b56" }
+  ]
+  // The ADMIN_TOKEN secret (optional but recommended) is set via the
+  // Cloudflare dashboard: Settings → Variables and Secrets.
 }
